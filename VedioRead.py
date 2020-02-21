@@ -7,7 +7,7 @@ import numpy as np
 
 c_path = os.getcwd()
 v_path = "D:\\Programming\\MATLAB\\video_prog\\"
-methodInPath = r"\SimpleUpdate"
+methodInPath = r"\SelectiveUpdate"
 sysbg = cv2.createBackgroundSubtractorMOG2(500, 30, detectShadows=True)
 # sysKNN = cv2.createBackgroundSubtractorKNN(500, 50, detectShadows=True)
 """文件的读取与视频文件的初始化"""
@@ -76,8 +76,8 @@ FrameNum = 0  # 当前帧计数器
 BG = initialframe
 """各种更新时的策略选择"""
 updateAsAll = False  # 按照红绿蓝三色更新
-UpdateSeparately = False  # 是否将前后背景分开更新
-EliminateForegroundTooLong = True  # 定期消除长时间占用前景像素
+UpdateSeparately = True  # 是否将前后背景分开更新
+EliminateForegroundTooLong = False  # 定期消除长时间占用前景像素
 UseMinimumRecContours = False  # 使用最小矩形框选选择目标
 UpdateWithinContours = False  # 以轮廓内物体为前景更新
 DoMorphology_1 = False  # 使用形态学处理消除小区域，先开后闭
@@ -249,20 +249,21 @@ while 1:
     cv2.imshow("Sub (Colored)", ColorSubShow)
     cv2.imshow("Sub with All color channel merged", SubAll)
     """Renew Paths"""
-    pathForSubAll = c_path + r"\Results"+ methodInPath + "\\" + v_filename + r"\SubAll\SubAll-%d" % FrameNum + ".jpg"
-    pathForRealtimeBackground = c_path + r"\Results" + methodInPath + "\\" + \
-                                v_filename + r"\RealtimeBackground\RealtimeBackground-%d" % FrameNum + ".jpg"
-    pathForFrame = c_path + r"\Results" + methodInPath + "\\" + v_filename + r"\Frame\Frame-%d" % FrameNum + ".jpg"
-    pathForColorSub = c_path + r"\Results" + methodInPath + "\\" + \
-                      v_filename + r"\ColorSub\ColorSub-%d" % FrameNum + ".jpg"
-    if EliminateForegroundTooLong:
-        pathForForeFlag = c_path + r"\Results" + methodInPath + "\\" + \
-                          v_filename + r"\ForeFlag\ForeFlag-%d" % FrameNum + ".jpg"
-        cv2.imwrite(pathForForeFlag, ForeFlag)
-    cv2.imwrite(pathForSubAll, SubAll)
-    cv2.imwrite(pathForRealtimeBackground, BG)
-    cv2.imwrite(pathForFrame, frame)
-    cv2.imwrite(pathForColorSub, ColorSubShow)
+    if not FrameNum % 50:
+        pathForSubAll = c_path + r"\Results" + methodInPath + "\\" + v_filename + r"\SubAll\SubAll-%d" % FrameNum + ".jpg"
+        pathForRealtimeBackground = c_path + r"\Results" + methodInPath + "\\" + \
+                                    v_filename + r"\RealtimeBackground\RealtimeBackground-%d" % FrameNum + ".jpg"
+        pathForFrame = c_path + r"\Results" + methodInPath + "\\" + v_filename + r"\Frame\Frame-%d" % FrameNum + ".jpg"
+        pathForColorSub = c_path + r"\Results" + methodInPath + "\\" + \
+                          v_filename + r"\ColorSub\ColorSub-%d" % FrameNum + ".jpg"
+        if EliminateForegroundTooLong:
+            pathForForeFlag = c_path + r"\Results" + methodInPath + "\\" + \
+                              v_filename + r"\ForeFlag\ForeFlag-%d" % FrameNum + ".jpg"
+            cv2.imwrite(pathForForeFlag, ForeFlag)
+        cv2.imwrite(pathForSubAll, SubAll)
+        cv2.imwrite(pathForRealtimeBackground, BG)
+        cv2.imwrite(pathForFrame, frame)
+        cv2.imwrite(pathForColorSub, ColorSubShow)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 vid.release()
